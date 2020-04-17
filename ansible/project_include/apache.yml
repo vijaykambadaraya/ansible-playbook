@@ -1,0 +1,6 @@
+##apache.yml
+---
+- name: install apache2
+  apt: name=apache2 update_cache=yes state=latest      
+- name: displaying message
+  debug: msg="you are awesome!!" 

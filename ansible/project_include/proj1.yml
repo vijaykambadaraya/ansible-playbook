@@ -1,0 +1,134 @@
+-
+  name: Deploy a web application
+  hosts: db_and_web_server
+  tasks:
+    - name: Install dependencies
+      apt: name={{ item }} state=present
+      with_items:
+       - python
+       - python-setuptools
+       - python-dev
+       - build-essential
+       - python-pip
+       - python-mysqldb
+
+    - name: Install MySQL database
+      apt:
+        name: "{{ item }}"
+        state:  present
+      with_items:
+       - mysql-server
+       - mysql-client
+
+    - name: Start Mysql Service
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    - name: Create Application Database
+      mysql_db: name='employee_db' state=present
+
+    - name: Create Application DB User
+      mysql_user: name='db_user' password='Passw0rd' priv='*.*:ALL' host='%' state='present'
+
+    - name: Install Python Flask dependencies
+      pip:
+        name: '{{ item }}'
+        state: present
+      with_items:
+       - flask
+       - flask-mysql
+
+    - name: Copy web-server code
+      copy: src=app.py dest=/opt/app.py
+      
+    - name: Execute to start the application
+      shell: FLASK_APP=/opt/app.py nohup flask run --host=0.0.0.0 &
+##################Exercise1 complete########
+$ cat site.yml
+---
+- hosts: host01
+
+  become: true
+
+  tasks:
+    - name: ensure sysstat is removed
+      apt:
+        name: sysstat
+        state: absent
+        ###############
+---
+- name: Play1-install apache
+  hosts: all
+  sudo: yes
+  tasks:
+    - name: install apache2
+      apt: name=apache2 update_cache=yes state=latest
+    - name: displaying "hello world"
+      debug: msg="hello world"
+      tags:
+        - tag1
+- name: Play2-install nginx
+  hosts: all
+  sudo: yes
+  tags:
+    - tag2
+  tasks:
+    - name: install nginx
+      apt: name=nginx update_cache=yes state=latest
+    - name: debug module displays message in control machine
+      debug: msg="have a good day"
+      tags:
+        - mymessage
+    - name: shell module displays message in host machine.
+      shell: echo "yet another task"
+      tags:
+        - mymessage
+#############################
+#playbook_include.yml
+---
+- name: testing includes
+  hosts: all
+  sudo: yes
+  tasks:
+    - include: apache.yml
+    - include: content.yml
+    - include: create_folder.yml
+    - include: content.yml
+- include: nginx.yml
+##########################
+##apache.yml
+---
+- name: install apache2
+  apt: name=apache2 update_cache=yes state=latest      
+- name: displaying message
+  debug: msg="you are awesome!!" 
+##########################
+##create_folder.yml
+---
+- name: creating folder
+  file: path=/home/ubuntu/folder1 state=directory
+#########################
+#content.yml
+---
+- name: list contents of directory in host 
+  command: ls /home/ubuntu
+  register: contents
+- name: check dir is empty
+  debug: msg="Directory is empty"
+  when: contents.stdout == ""
+- name: check dir has contents
+  debug: msg="Directory is not empty"
+  when: contents.stdout != ""
+################
+#nginx.yml
+---
+- name: installing nginx
+  hosts: all
+  sudo: yes
+  tasks:
+    - name: install nginx
+     apt: name=nginx update_cache=yes state=latest      
+    - name: displaying message
+      debug: msg="yayy!! nginx installed"  

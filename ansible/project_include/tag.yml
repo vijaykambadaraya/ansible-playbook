@@ -1,0 +1,27 @@
+---
+- name: Play1-install apache
+  hosts: all
+  sudo: yes
+  tasks:
+    - name: install apache2
+      apt: name=apache2 update_cache=yes state=latest
+    - name: displaying "hello world"
+      debug: msg="hello world"
+      tags:
+        - tag1
+- name: Play2-install nginx
+  hosts: all
+  sudo: yes
+  tags:
+    - tag2
+  tasks:
+    - name: install nginx
+      apt: name=nginx update_cache=yes state=latest
+    - name: debug module displays message in control machine
+      debug: msg="have a good day"
+      tags:
+        - mymessage
+    - name: shell module displays message in host machine.
+      shell: echo "yet another task"
+      tags:
+        - mymessage

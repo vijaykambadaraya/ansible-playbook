@@ -1,0 +1,12 @@
+#############################
+#playbook_include.yml
+---
+- name: testing includes
+  hosts: all
+  sudo: yes
+  tasks:
+    - include: apache.yml
+    - include: content.yml
+    - include: create_folder.yml
+    - include: content.yml
+- include: nginx.yml

@@ -1,0 +1,10 @@
+#nginx.yml
+---
+- name: installing nginx
+  hosts: all
+  sudo: yes
+  tasks:
+    - name: install nginx
+     apt: name=nginx update_cache=yes state=latest      
+    - name: displaying message
+      debug: msg="yayy!! nginx installed"  
