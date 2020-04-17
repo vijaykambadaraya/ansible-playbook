@@ -1,0 +1,6 @@
+dd a line in file test.txt:
+
+Copy the content to notepad, and edit the changes.
+Remove the file rm test.txt.
+Create a new file with the same name vi test.txt.
+Copy the edited content from notepad.

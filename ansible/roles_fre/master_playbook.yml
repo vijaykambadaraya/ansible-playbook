@@ -1,0 +1,6 @@
+---
+  - name: my first role in ansible
+    hosts: all
+    sudo: yes
+    roles:
+      - sample_role
